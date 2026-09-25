@@ -1,41 +1,36 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { ApiParam } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { BlogDto } from './dtos/blog.dto.js';
+import { BlogService } from './blog.service.js';
+import { BlogQueryDto } from './dtos/blog-query.dto.js';
 
 @Controller('blog')
+@ApiTags('blog')
 export class BlogController {
+    constructor(private readonly blogService: BlogService) { }
 
     @Get()
-    findAll() {
-        return 'find all'
-    }
-
-    @Get('category')
-    findAllCategories() {
-        return "find all categories"
+    findAll(@Query() queryParam: BlogQueryDto) {
+        return this.blogService.findAll(queryParam);
     }
 
     @Get(':id')
-    findOne(@Param('id') id :any) {
-        console.log(id)
-        return 'find one';
+    findOne(@Param('id') id: string) {
+        return this.blogService.findOne(id);
     }
 
     @Post()
-    create(@Body() body :BlogDto) {
-        console.log(body);
-        return('create');
+    create(@Body() body: BlogDto) {
+        return this.blogService.create(body);
     }
 
     @Put(':id')
-    update(@Param('id') id :any, @Body() body :BlogDto) {
-        console.log(id, body);
-        return 'update';
+    update(@Param('id') id: string, @Body() body: BlogDto) {
+        return this.blogService.update(id, body);
     }
 
     @Delete(':id')
-    delete(@Param('id') id :any) {
-        console.log(id)
-        return 'delete'
+    delete(@Param('id') id: string) {
+        return this.blogService.delete(id);
     }
 }

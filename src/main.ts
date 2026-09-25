@@ -8,7 +8,14 @@ async function bootstrap() {
     instrument: ObserveInstrument,
   });
   app.enableCors();
-  // app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transformOptions: { enableImplicitConversion: true }
+    })
+  )
   const config = new DocumentBuilder().setTitle('Nest App').build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/documentation', app, document)
