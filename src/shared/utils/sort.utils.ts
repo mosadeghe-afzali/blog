@@ -1,6 +1,7 @@
-import { Sort } from "../../blog/dtos/blog-query.dto.js";
+import { Sort } from "../dtos/general-sort.dto.js";
 
-export const sortFunction = (sort: Sort) => {
+
+export const sortFunction = (sort?: Sort) => {
     let sortObject: any = {};
     if(sort === Sort.title) {
       sortObject = {title: 1};

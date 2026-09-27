@@ -1,4 +1,4 @@
 import { GeneralQueryDto } from "../../shared/dtos/general-sort.dto.js";
 
 
-export class BlogQueryDto extends GeneralQueryDto {}
+export class BlogCategoryQueryDto extends GeneralQueryDto {}

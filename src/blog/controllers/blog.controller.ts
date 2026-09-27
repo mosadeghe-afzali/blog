@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
-import { BlogDto } from './dtos/blog.dto.js';
-import { BlogService } from './blog.service.js';
-import { BlogQueryDto } from './dtos/blog-query.dto.js';
+import { BlogDto } from '../dtos/blog.dto.js';
+import { BlogService } from '../services/blog.service.js';
+import { BlogQueryDto } from '../dtos/blog-query.dto.js';
 
 @Controller('blog')
 @ApiTags('blog')

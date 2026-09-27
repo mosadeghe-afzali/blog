@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { BlogDto } from './dtos/blog.dto.js';
-import { Blog } from './schemas/blog.schemas.js';
+import { BlogDto } from '../dtos/blog.dto.js';
+import { Blog } from '../schemas/blog.schema.js';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { BlogQueryDto, Sort } from './dtos/blog-query.dto.js';
-import { sortFunction } from '../shared/utils/sort.utils.js';
+import { BlogQueryDto } from '../dtos/blog-query.dto.js';
+import { sortFunction } from '../../shared/utils/sort.utils.js';
 
 @Injectable()
 export class BlogService {
@@ -13,7 +13,7 @@ export class BlogService {
     @InjectModel(Blog.name) private readonly blogModel: Model<Blog>
   ) {}
 
-  async findAll(queryParam: BlogQueryDto) {
+  async findAll(queryParam: BlogQueryDto, selectObject: any = {__v: 0}) {
     const {limit = 5 , page = 1 , title, sort} = queryParam
     const query: any = {};
     if(title) {
@@ -23,6 +23,8 @@ export class BlogService {
     let sortObject = sortFunction(sort);
     const blogs = await this.blogModel
     .find(query)
+    .populate('category', {title: 1})
+    .select(selectObject)
     .skip(page -1)
     .sort(sortObject)
     .limit(limit)
@@ -32,8 +34,12 @@ export class BlogService {
     return {count, blogs};
   }
 
-  async findOne(id: string) {
-    const blog = await this.blogModel.findOne({_id: id}).exec();
+  async findOne(id: string, selectObject: any = {__v: 0}) {
+    const blog = await this.blogModel
+    .findOne({_id: id})
+    .populate('category', {title: 1})
+    .select(selectObject)
+    .exec();
     if(!blog) {
       throw new NotFoundException('blog not found')
     }
@@ -49,17 +55,14 @@ export class BlogService {
   }
 
   async update(id: string, body: BlogDto) {
-    const blog = await this.findOne(id);
-    console.log(blog, 'bbbbbbbbbbbbbbbbbbbbbbbbbbb')
-    blog.title = body.title;
-    blog.content = body.content;
-    await blog.save();
 
-    return blog;
+    return await this.blogModel.findByIdAndUpdate(id, body, {
+      new: true
+    });
   }
 
   async delete(id: string) {
-    const blog = await this.findOne(id);
+    const blog = await this.findOne(id, {_id: 1});
     await blog?.deleteOne();
   }
 }
