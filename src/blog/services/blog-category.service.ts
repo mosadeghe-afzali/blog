@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { sortFunction } from '../../shared/utils/sort.utils.js';
 import { BlogCategoryDto } from '../dtos/blog-category.dto.js';
+import { deleteImage } from '../../shared/utils/file-utils.js';
 
 
 @Injectable()
@@ -53,13 +54,19 @@ export class BlogCategoryService {
   }
 
   async update(id: string, body: BlogCategoryDto) {
+    const blogCategory = await this.findOne(id, { _id: 1, Image: 1 });
+    if (blogCategory.image != body.image) {
+      await deleteImage(blogCategory.image);
+    }
     return await this.blogCategoryModel.findByIdAndUpdate(id, body, {
       new: true
     });
   }
 
   async delete(id: string) {
-    const blog = await this.findOne(id, { _id: 1 });
-    await blog?.deleteOne();
+    const blogCategory = await this.findOne(id, { _id: 1, Image: 1 });
+    await deleteImage(blogCategory.image);
+
+    await blogCategory.deleteOne();
   }
 }

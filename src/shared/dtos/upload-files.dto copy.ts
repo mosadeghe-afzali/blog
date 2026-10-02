@@ -1,13 +1,17 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 
-export class UploadFileDto {
+export class UploadFilesDto {
   @ApiProperty({
-    type: 'string',
+    type: 'array',
     required: true,
-    format: 'binary'
+    items: {
+      type: 'string',
+      format: 'binary'
+    }
   })
-  file: any
+  files: any
+  
   @IsOptional()
   folder?: string
 

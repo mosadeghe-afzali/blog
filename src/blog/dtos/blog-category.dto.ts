@@ -3,7 +3,12 @@ export class BlogCategoryDto {
     @IsString()
     @IsNotEmpty()
     title: string
+    
     @IsString()
     @IsNotEmpty()
     content: string
+
+    @IsString()
+    @IsNotEmpty()
+    image: string
 }

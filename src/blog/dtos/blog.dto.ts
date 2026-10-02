@@ -11,5 +11,9 @@ export class BlogDto {
 
     @IsString()
     @IsNotEmpty()
+    image: string
+
+    @IsString()
+    @IsNotEmpty()
     category: string
 }
