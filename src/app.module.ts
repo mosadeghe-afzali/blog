@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
@@ -13,6 +13,7 @@ import { Log, logSchema } from './shared/schemas/log.schema.js';
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 import { ConfigModule } from '@nestjs/config';
 import { LogInterceptor } from './shared/interceptors/log.interceptor.js';
+import { TimeMiddleware } from './shared/middlewares/time.middleware.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 console.log(__dirname)
@@ -59,4 +60,8 @@ console.log(__dirname)
     }
   ],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(TimeMiddleware).forRoutes('*')
+  }
+ }
