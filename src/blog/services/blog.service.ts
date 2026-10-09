@@ -15,6 +15,7 @@ export class BlogService {
   ) { }
 
   async findAll(queryParam: BlogQueryDto, selectObject: any = { __v: 0 }) {
+    console.log('service')
     const { limit = 5, page = 1, title, sort } = queryParam
     const query: any = {};
     if (title) {
@@ -66,8 +67,10 @@ export class BlogService {
   }
 
   async delete(id: string) {
-    const blog = await this.findOne(id, { _id: 1, image: 1 });
+    const blog = await this.findOne(id);
     await deleteImage(blog.image);
     await blog?.deleteOne();
+
+    return blog;
   }
 }

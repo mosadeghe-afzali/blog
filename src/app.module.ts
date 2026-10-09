@@ -7,20 +7,35 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { join, dirname } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { fileURLToPath } from 'url';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { LogFilter } from './shared/filter/log.filter.js';
+import { Log, logSchema } from './shared/schemas/log.schema.js';
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
-
+import { ConfigModule } from '@nestjs/config';
+import { LogInterceptor } from './shared/interceptors/log.interceptor.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 console.log(__dirname)
 
+
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/nest-app'),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    MongooseModule.forRoot(process.env.DB_URL!),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'file'),
       serveRoot: '/file'
     }),
-    
+    MongooseModule.forFeature([
+      {
+        name: Log.name,
+        schema: logSchema
+      }
+    ]),
+
     // Distributed tracing, auto-correlated logs, request/job metrics, error
     // telemetry, alarms, and more — out of the box. Sign up at https://observe.nestjs.com
     ObserveModule.forRoot({
@@ -29,9 +44,19 @@ console.log(__dirname)
       serviceId: 'nest-app',
     }),
     BlogModule,
-    
+
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: LogFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LogInterceptor
+    }
+  ],
 })
-export class AppModule {}
+export class AppModule { }

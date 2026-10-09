@@ -1,16 +1,21 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
 import { BlogDto } from '../dtos/blog.dto.js';
 import { BlogService } from '../services/blog.service.js';
 import { BlogQueryDto } from '../dtos/blog-query.dto.js';
 
-@Controller('blog')
 @ApiTags('blog')
+// @ApiHeader({
+//     name: 'apikey',
+//     description: 'api key'
+// })
+@Controller('blog')
 export class BlogController {
     constructor(private readonly blogService: BlogService) { }
 
     @Get()
     findAll(@Query() queryParam: BlogQueryDto) {
+        console.log('controller')
         return this.blogService.findAll(queryParam);
     }
 

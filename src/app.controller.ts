@@ -8,6 +8,7 @@ import { UploadFileDto } from './shared/dtos/upload-file.dto.js';
 import { deleteImage, SaveImage, SaveImages } from './shared/utils/file-utils.js';
 import { UploadFilesDto } from './shared/dtos/upload-files.dto copy.js';
 import { DeleteFileDto } from './shared/dtos/delete-file.dto.js';
+import { ImagesPipe } from './shared/pipes/images.pipe.js';
 @Controller()
 @ApiTags('shared')
 export class AppController {
@@ -32,7 +33,6 @@ export class AppController {
     })
   ) file: Express.Multer.File,
   ) {
-    console.log(file);
     return SaveImage(file);
   }
 
@@ -44,7 +44,7 @@ export class AppController {
   })
   @UseInterceptors(FilesInterceptor('files', 10))
   uploadFiles(
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles(ImagesPipe) files: Express.Multer.File[],
   ) {
     return SaveImages(files);
   }

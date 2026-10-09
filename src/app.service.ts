@@ -1,8 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Log } from './shared/schemas/log.schema.js';
+import { Model } from 'mongoose';
+import { LogDto } from './shared/dtos/log.dto.js';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  constructor(@InjectModel(Log.name) private readonly logModel: Model<Log>) {}
+
+  async log(body: LogDto) {
+    const newLog = new this.logModel(body)
+    await newLog.save();
+    return newLog;
   }
+
 }
